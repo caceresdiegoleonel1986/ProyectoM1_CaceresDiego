@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Paletas</title>
+  <link rel="stylesheet" href="style/style.css">
+</head>
+<body style="background: linear-gradient(135deg, rgb(89, 94, 188), rgb(161, 157, 113));">
+  <header>
+    <h1>🎨 Generador de Paletas</h1>
+  </header>
+
+  <main>
+    <section class="controls">
+      <label for="palette-size">Tamaño de paleta:</label>
+      <select id="palette-size">
+        <option value="6">6 colores</option>
+        <option value="8">8 colores</option>
+        <option value="9">9 colores</option>
+      </select>
+
+      <label for="format">Formato:</label>
+      <select id="format">
+        <option value="hsl">HSL</option>
+        <option value="rgba">RGBA</option>
+      </select>
+
+      <button id="generate-btn">Generar paleta</button>
+      <button id="save-btn">Guardar paleta</button>
+      <button id="clear-btn">Limpiar paletas</button>
+    </section>
+
+    <section id="palette" aria-label="Paleta de colores"></section>
+
+    <section id="saved-palettes" aria-label="Paletas guardadas">
+      <h2>Paletas guardadas</h2>
+      <div id="palettes-list"></div>
+    </section>
+  </main>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script\script.js"></script>
+</body>
+</html>
