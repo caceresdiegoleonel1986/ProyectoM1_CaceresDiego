@@ -1,35 +1,300 @@
+/* === Fondo general del body === */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background: linear-gradient(135deg, #f0f0f0, #dcdcdc);
-    transition: background 1s ease;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #fff;
+  transition: background 1s ease;
 }
 
+/* === Contenedor principal (excluye el header) === */
+.main-content {
+  background: linear-gradient(270deg, #ff0000, #00ff00, #0000ff);
+  background-size: 600% 600%;
+  animation: gradientMove 20s ease infinite;
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+/* === Animación del gradiente === */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* === Encabezado principal === */
 header {
-    text-align: center;
-    padding: 1rem;
-    background-color: #333;
-    color: #fff;
+  background-color: #1c1c1c;
+  text-align: center;
+  padding: 20px 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
+/* === Logo tipográfico === */
+.logo {
+  font-weight: 700;
+  font-size: 1.8rem;
+  background: linear-gradient(90deg, #ff0000, #00ff00, #0000ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 2px;
+}
+
+/* === Panel de controles (Flexbox) === */
 .controls {
-    display: flex;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  margin: 20px auto;
+  width: fit-content;
+}
+
+/* === Botones y selectores === */
+button, select, label {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+button:hover, select:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* === Contenedor de paleta actual (Grid) === */
+#palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+  justify-items: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+/* === Caja individual de color === */
+.color-box {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.color-box:hover {
+  transform: scale(1.05);
+}
+
+/* === Código de color dentro de cada caja === */
+.color-code {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
+  color: #000;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  margin-bottom: 6px;
+}
+
+/* === Botones dentro de cada caja === */
+.lock-btn, .wheel-btn {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+/* Botón de rueda cromática */
+.wheel-btn {
+  left: 40px;
+  transition: background 0.3s ease;
+}
+
+/* Efecto arco iris al pasar el mouse */
+.wheel-btn:hover {
+  background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+  background-size: 400% 400%;
+  animation: rainbowMove 3s linear infinite;
+  color: #fff;
+}
+
+@keyframes rainbowMove {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+/* === Input invisible para el selector de color === */
+.color-input-overlay {
+  position: absolute;
+  top: 36px;
+  left: 6px;
+  width: 28px;
+  height: 28px;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* === Slider de transparencia === */
+input[type="range"] {
+  width: 80%;
+  margin-bottom: 8px;
+}
+
+/* === Contenedor de paletas guardadas === */
+#saved-palettes {
+  margin: 20px auto;
+  width: 90%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* === Paleta guardada individual === */
+.saved-item {
+  margin-bottom: 20px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(6px);
+}
+
+/* === Título de cada paleta guardada === */
+.saved-item h4 {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(4px);
+  color: #222;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+/* === Miniaturas de colores guardados === */
+.saved-color {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-right: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* === Botones de paletas guardadas === */
+.saved-item button {
+  margin: 6px 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.saved-item button:first-of-type {
+  background: #007bff;
+  color: #fff;
+}
+
+.saved-item button:last-of-type {
+  background: #ff4d4d;
+  color: #fff;
+}
+
+/* === Mensaje de copiado (toast) === */
+#toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+#toast.show {
+  opacity: 1;
+}
+
+/* === Diseño responsive === */
+
+/* Para pantallas medianas (tablets) */
+@media (max-width: 992px) {
+  .controls {
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 1rem;
-    margin: 1rem 0;
+  }
+
+  #palette {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+  }
+
+  .color-box {
+    width: 100px;
+    height: 100px;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
 }
 
-button {
-    padding: 0.5rem 1rem;
-    border: none;
-    background-color: #444;
-    color: #fff;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+/* Para pantallas pequeñas (celulares) */
+@media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    text-align: center;
+  }
 
-}
+  .controls {
+    flex-direction: column;
+    gap: 8px;
+    width: 90%;
+  }
 
-button:hover {
-    transform: scale(1.05);
-}
+  #palette {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    justify-items: center;
+  }
+
+  .color-box {
+    width: 90%;
+    height: 80px;
+  }
+
+  .color-code {
+    font-size: 0.9rem;
+  }
+
+  #saved-palettes {
+    width: 95%;
+    padding: 10px;
+  }
