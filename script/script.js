@@ -1,35 +1,40 @@
 /* === Variables principales === */
-const paletteContainer = document.getElementById('palette'); // Contenedor de la paleta actual
-const toast = document.getElementById('toast');              // Mensaje de copiado
-const savedContainer = document.getElementById('saved-palettes'); // Contenedor de paletas guardadas
+const paletteContainer = document.getElementById('palette');
+const toast = document.getElementById('toast');
+const savedContainer = document.getElementById('saved-palettes');
+let palette = []; // estado global
 
 /* === Función: convierte cualquier color a HEX === */
 function rgbToHex(color) {
-  if (color.startsWith("#")) return color; // Si ya es HEX, lo devuelve
-  const nums = color.match(/\d+/g);        // Extrae números de RGB/RGBA
+  if (color.startsWith("#")) return color;
+  const nums = color.match(/\d+/g);
   if (!nums) return "#ffffff";
   const [r, g, b] = nums.map(Number);
   return "#" + [r, g, b].map(x => x.toString(16).padStart(2, "0")).join("");
 }
 
 /* === Función: genera un color aleatorio en distintos formatos === */
-function randomColor(format) {
-  if (format === 'rgba') {
-    return `rgba(${rand(255)},${rand(255)},${rand(255)},1)`;
-  } else if (format === 'hsl') {
-    return `hsl(${rand(360)},${rand(100)}%,${rand(100)}%)`;
+function getRandomColor(format) {
+  const r = Math.floor(Math.random() * 256);
+  const g = Math.floor(Math.random() * 256);
+  const b = Math.floor(Math.random() * 256);
+  if (format === "rgba") {
+    const a = (Math.random()).toFixed(2);
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  } else if (format === "hsl") {
+    const h = Math.floor(Math.random() * 360);
+    const s = Math.floor(Math.random() * 100);
+    const l = Math.floor(Math.random() * 100);
+    return `hsl(${h}, ${s}%, ${l}%)`;
   } else {
-    return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+    return rgbToHex(`rgb(${r},${g},${b})`);
   }
 }
-function rand(max) { return Math.floor(Math.random() * max); }
 
 /* === Función: genera la paleta respetando los bloqueos === */
 function generatePalette() {
   const size = parseInt(document.getElementById('palette-size').value);
   const format = document.getElementById('format').value;
-  const colors = [...document.querySelectorAll('.color-code')].map(c => c.textContent);
-  updateBackgroundWithPalette(colors); // ✅ actualiza el fondo con la paleta generada
 
   // Guarda colores bloqueados
   const wrappers = paletteContainer.querySelectorAll(".color-wrapper");
@@ -42,21 +47,98 @@ function generatePalette() {
     }
   });
 
-  paletteContainer.innerHTML = "";
+  // Genera nueva paleta
+  palette = [];
+  for (let i = 0; i < size; i++) {
+    if (lockedColors[i]) {
+      palette.push({ color: lockedColors[i], locked: true });
+    } else {
+      const newColor = getRandomColor(format);
+      palette.push({ color: newColor, locked: false });
+    }
+  }
 
-  // Renderiza primero los bloqueados
-  lockedColors.forEach((color, i) => {
-    createColorBox(color, true, i);
+  // Limpia y renderiza
+  paletteContainer.innerHTML = "";
+  palette.forEach((item, i) => {
+    createColorBox(item.color, item.locked, i);
   });
 
-  // Completa con nuevos colores
-  for (let i = lockedColors.length; i < size; i++) {
-    const color = randomColor(format);
-    createColorBox(color, false, i);
-  }
+  // Actualiza fondo
+  updateBackgroundWithPalette(palette.map(item => item.color));
 }
 
-/* === Función: crea una caja de color con controles === */
+/* === Auxiliares === */
+function createLockButton(index, locked) {
+  const lockBtn = document.createElement("button");
+  lockBtn.className = "lock-btn";
+  lockBtn.textContent = locked ? "🔒" : "🔓";
+  lockBtn.onclick = () => {
+    const lockedNow = lockBtn.textContent === "🔓";
+    lockBtn.textContent = lockedNow ? "🔒" : "🔓";
+    palette[index].locked = lockedNow;
+  };
+  return lockBtn;
+}
+
+function createWheelButton(index, box, code, color) {
+  const wheel = document.createElement("button");
+  wheel.className = "wheel-btn";
+  wheel.innerHTML = "🎨";
+
+  const colorInput = document.createElement("input");
+  colorInput.type = "color";
+  colorInput.className = "color-input-overlay";
+  colorInput.value = rgbToHex(color);
+
+  colorInput.oninput = (e) => {
+    box.style.background = e.target.value;
+    code.textContent = `${e.target.value} | ${rgbToHex(e.target.value)}`;
+    box.dataset.baseColor = e.target.value;
+    palette[index].color = e.target.value;
+  };
+
+  wheel.onclick = () => colorInput.click();
+
+  const container = document.createElement("div");
+  container.appendChild(wheel);
+  container.appendChild(colorInput);
+  return container;
+}
+
+function createTransparencySlider(index, box, code) {
+  const range = document.createElement("input");
+  range.type = "range";
+  range.min = 0;
+  range.max = 100;
+  range.value = 100;
+
+  range.oninput = () => {
+    const alpha = range.value / 100;
+    let baseColor = box.dataset.baseColor;
+
+    // Convertir cualquier formato a HEX primero
+    if (!baseColor.startsWith("#")) {
+      baseColor = rgbToHex(baseColor);
+    }
+
+    const r = parseInt(baseColor.slice(1, 3), 16);
+    const g = parseInt(baseColor.slice(3, 5), 16);
+    const b = parseInt(baseColor.slice(5, 7), 16);
+
+    const rgba = `rgba(${r},${g},${b},${alpha})`;
+
+      // Actualiza fondo y texto dinámicamente
+      box.style.background = rgba;
+      code.textContent = `${rgba} | ${rgbToHex(baseColor)}`;
+
+      // Guarda el color actual con transparencia
+      palette[index].color = rgba;
+  };
+  return range;
+}
+
+/* === Función principal: crea la caja de color === */
 function createColorBox(color, locked, index) {
   const wrapper = document.createElement("div");
   wrapper.className = "color-wrapper";
@@ -66,74 +148,18 @@ function createColorBox(color, locked, index) {
   box.style.background = color;
   box.dataset.baseColor = color;
 
-  // Texto con el código del color
   const code = document.createElement("div");
   code.className = "color-code";
   code.textContent = `${color} | ${rgbToHex(color)}`;
   box.appendChild(code);
 
-  // Botón de candado
-  const lockBtn = document.createElement("button");
-  lockBtn.className = "lock-btn";
-  lockBtn.textContent = locked ? "🔒" : "🔓";
-  lockBtn.onclick = () => {
-    lockBtn.textContent = lockBtn.textContent === "🔓" ? "🔒" : "🔓";
-  };
-  box.appendChild(lockBtn);
+  // Añadir componentes modulares
+  box.appendChild(createLockButton(index, locked));
+  box.appendChild(createWheelButton(index, box, code, color));
+  box.appendChild(createTransparencySlider(index, box, code));
 
-  // Botón de rueda cromática (abre selector flotante debajo del botón)
-  const wheel = document.createElement("button");
-  wheel.className = "wheel-btn";
-  wheel.innerHTML = "🎨";
-
-  const colorInput = document.createElement("input");
-  colorInput.type = "color";
-  colorInput.className = "color-input-overlay";
-  colorInput.value = rgbToHex(color);
-  colorInput.oninput = (e) => {
-    box.style.background = e.target.value;
-    code.textContent = `${e.target.value} | ${rgbToHex(e.target.value)}`;
-    box.dataset.baseColor = e.target.value;
-  };
-
-  wheel.onclick = () => {
-    colorInput.click(); // ✅ abre el selector flotante
-  };
-
-  box.appendChild(wheel);
-  box.appendChild(colorInput);
-
-  // Slider de transparencia
-  const range = document.createElement("input");
-  range.type = "range";
-  range.min = 0;
-  range.max = 100;
-  range.value = 100;
-  range.oninput = () => {
-  const alpha = range.value / 100;
-  const baseColor = box.dataset.baseColor;
-
-  if (baseColor.startsWith("#")) {
-    const r = parseInt(baseColor.slice(1, 3), 16);
-    const g = parseInt(baseColor.slice(3, 5), 16);
-    const b = parseInt(baseColor.slice(5, 7), 16);
-    const rgba = `rgba(${r},${g},${b},${alpha})`;
-    box.style.background = rgba;
-    code.textContent = `${rgba} | ${rgbToHex(baseColor)}`;
-  } else if (baseColor.startsWith("hsl")) {
-    const hsla = baseColor.replace("hsl", "hsla").replace(")", `, ${alpha})`);
-    box.style.background = hsla;
-    code.textContent = `${hsla} | ${rgbToHex(box.style.background)}`;
-  } else if (baseColor.startsWith("rgba")) {
-    const rgba = baseColor.replace(/, *[0-9.]+\)$/, `, ${alpha})`);
-    box.style.background = rgba;
-    code.textContent = `${rgba} | ${rgbToHex(rgba)}`;
-  }
-};
-  box.appendChild(range);
-
-  // Copiar HEX al hacer clic
-  box.onclick = () => {
+  // Copiar HEX al hacer clic en el código
+  code.onclick = () => {
     navigator.clipboard.writeText(rgbToHex(box.dataset.baseColor));
     showToast();
   };
@@ -153,12 +179,16 @@ document.getElementById("generate-btn").onclick = generatePalette;
 
 document.getElementById("save-btn").onclick = () => {
   const colors = [...document.querySelectorAll('.color-code')].map(c => c.textContent);
+  if (colors.length === 0) {
+    alert("No hay colores para guardar.");
+    return;
+  }
   const name = prompt('Nombre de la paleta:');
   if (name) {
     const date = new Date().toLocaleString();
-    const palette = { name, date, colors };
+    const paletteObj = { name, date, colors };
     let saved = JSON.parse(localStorage.getItem('palettes') || '[]');
-    saved.push(palette);
+    saved.push(paletteObj);
     localStorage.setItem('palettes', JSON.stringify(saved));
     renderSaved();
   }
@@ -173,18 +203,14 @@ document.getElementById("clear-btn").onclick = () => {
 function renderSaved() {
   savedContainer.innerHTML = '';
   const saved = JSON.parse(localStorage.getItem('palettes') || '[]');
-
   if (saved.length === 0) {
     savedContainer.innerHTML = '<p>No hay paletas guardadas aún.</p>';
     return;
   }
-
   saved.forEach((p, index) => {
     const item = document.createElement('div');
     item.className = 'saved-item';
     item.innerHTML = `<h4>${p.name} - ${p.date}</h4>`;
-
-    // Miniaturas de colores guardados como lista
     const colorsList = document.createElement('ul');
     colorsList.className = 'palette';
     p.colors.forEach(c => {
@@ -195,27 +221,16 @@ function renderSaved() {
       colorsList.appendChild(li);
     });
     item.appendChild(colorsList);
-
-    // Botón para cargar paleta
     const loadBtn = document.createElement('button');
     loadBtn.textContent = 'Cargar esta paleta';
     loadBtn.onclick = () => {
       paletteContainer.innerHTML = '';
-      p.colors.forEach(c => {
-        const box = document.createElement('div');
-        box.className = 'color-box';
-        box.style.background = c.split("|")[0].trim();
-        const code = document.createElement('div');
-        code.className = 'color-code';
-        code.textContent = c;
-        box.appendChild(code);
-        paletteContainer.appendChild(box);
+      p.colors.forEach((c, i) => {
+        createColorBox(c.split("|")[0].trim(), false, i);
       });
       updateBackgroundWithPalette(p.colors);
     };
     item.appendChild(loadBtn);
-
-    // Botón para eliminar paleta
     const deleteBtn = document.createElement('button');
     deleteBtn.textContent = 'Eliminar';
     deleteBtn.style.background = '#ff4d4d';
@@ -225,12 +240,11 @@ function renderSaved() {
       renderSaved();
     };
     item.appendChild(deleteBtn);
-
     savedContainer.appendChild(item);
   });
 }
 
-/* === Función: actualiza el fondo del body con la paleta cargada === */
+  /* === Función: actualiza el fondo del body con la paleta cargada === */
 function updateBackgroundWithPalette(colors) {
   const hexColors = colors.map(c => c.split("|")[0].trim());
   const gradient = `linear-gradient(270deg, ${hexColors.join(", ")})`;
@@ -240,4 +254,4 @@ function updateBackgroundWithPalette(colors) {
 }
 
 /* === Inicializa mostrando paletas guardadas === */
-renderSaved();
+renderSaved();//
