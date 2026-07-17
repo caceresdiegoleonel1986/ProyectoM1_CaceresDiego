@@ -5,12 +5,12 @@
   <title>Generador de Paletas</title>
   <link rel="stylesheet" href="style/style.css">
 </head>
-<body style="background: linear-gradient(135deg, rgb(89, 94, 188), rgb(161, 157, 113));">
+<body>
   <header>
-    <h1>🎨 Generador de Paletas</h1>
+    <h1 title="Generador de paletas de colores">🎨 Generador de Paletas</h1>
   </header>
 
-  <main>
+  <main class="main-content"><!-- Controles para generar paletas -->
     <section class="controls">
       <!-- Label asociado con select -->
       <label for="palette-size">Tamaño de paleta:</label>
@@ -28,9 +28,9 @@
       </select>
 
       <!-- Botones con aria-label para accesibilidad -->
-      <button id="generate-btn" aria-label="Generar nueva paleta">Generar paleta</button>
-      <button id="save-btn" aria-label="Guardar paleta actual">Guardar paleta</button>
-      <button id="clear-btn" aria-label="Limpiar paletas guardadas">Limpiar paletas</button>
+      <button id="generate-btn" type="button" aria-label="Generar nueva paleta">Generar paleta</button>
+      <button id="save-btn" type="button" aria-label="Guardar paleta actual">Guardar paleta</button>
+      <button id="clear-btn" type="button" aria-label="Limpiar paletas guardadas">Limpiar paletas</button>
     </section>
 
     <!-- Paleta generada -->

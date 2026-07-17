@@ -145,7 +145,7 @@ function createColorBox(color, locked, index) {
 /* === Función: muestra el mensaje de copiado === */
 function showToast() {
   toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 1500);
+  setTimeout(() => toast.classList.remove("show"), 3000);
 }
 
 /* === Botones principales === */
@@ -184,17 +184,17 @@ function renderSaved() {
     item.className = 'saved-item';
     item.innerHTML = `<h4>${p.name} - ${p.date}</h4>`;
 
-    // Miniaturas de colores guardados
-    const colorsDiv = document.createElement('div');
-    colorsDiv.className = 'palette';
+    // Miniaturas de colores guardados como lista
+    const colorsList = document.createElement('ul');
+    colorsList.className = 'palette';
     p.colors.forEach(c => {
-      const box = document.createElement('div');
-      box.className = 'saved-color';
-      box.style.background = c.split("|")[0].trim();
-      box.title = c;
-      colorsDiv.appendChild(box);
+      const li = document.createElement('li');
+      li.className = 'saved-color';
+      li.style.background = c.split("|")[0].trim();
+      li.title = c;
+      colorsList.appendChild(li);
     });
-    item.appendChild(colorsDiv);
+    item.appendChild(colorsList);
 
     // Botón para cargar paleta
     const loadBtn = document.createElement('button');
@@ -211,7 +211,6 @@ function renderSaved() {
         box.appendChild(code);
         paletteContainer.appendChild(box);
       });
-      // ✅ Actualiza el fondo con los colores de la paleta cargada
       updateBackgroundWithPalette(p.colors);
     };
     item.appendChild(loadBtn);
