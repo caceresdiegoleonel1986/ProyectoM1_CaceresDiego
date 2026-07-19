@@ -205,18 +205,24 @@ function createColorBox(color, locked, index) {
   box.className = "color-box";
   box.style.background = color;
 
-  // Guardamos el color original en una propiedad fija
-  box.dataset.originalColor = color; 
-  box.dataset.baseColor = color; // este se puede ir modificando
+  // Guardamos el color original
+  box.dataset.originalColor = color;
+  box.dataset.baseColor = color;
 
   const code = document.createElement("div");
   code.className = "color-code";
   code.textContent = `${color} | ${rgbToHex(color)}`;
   box.appendChild(code);
 
+  // Botones
   box.appendChild(createLockButton(index, locked));
   box.appendChild(createWheelButton(index, box, code, color));
-  box.appendChild(createTransparencySlider(index, box, code));
+
+  // Solo mostrar slider si el formato no es HSL
+  const format = document.getElementById('format').value;
+  if (format !== 'hsl') {
+    box.appendChild(createTransparencySlider(index, box, code));
+  }
 
   code.onclick = () => {
     navigator.clipboard.writeText(rgbToHex(box.dataset.originalColor));

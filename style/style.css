@@ -5,8 +5,8 @@ body {
   padding: 0;
   color: #fff;
   transition: background 1s ease;
-  background: linear-gradient(270deg, #ff0000, #00ff00, #0000ff);
-  background-size: 600% 600%;
+  background: linear-gradient(90deg, #ff7f00, #ffff00, #00ff00, #00bfff, #8a2be2);
+  background-size: 400% 400%;
   animation: gradientMove 20s ease infinite;
 }
 
@@ -24,20 +24,89 @@ body {
 
 /* === Encabezado principal === */
 header {
-  background-color: #1c1c1c;
-  text-align: center;
-  padding: 20px 0;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  background: linear-gradient(180deg, #000, #222);
+  padding: 10px 0;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
 }
 
-/* === Logo tipográfico === */
-.logo {
-  font-weight: 700;
-  font-size: 1.8rem;
-  background: linear-gradient(90deg, #ff0000, #00ff00, #0000ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 2px;
+header img {
+  width: 150px;
+  height: auto;
+  filter: drop-shadow(0 0 10px cyan) brightness(1.2);
+  animation: glowLogo 3s infinite alternate;
+}
+
+@keyframes glowLogo {
+  from { filter: drop-shadow(0 0 10px cyan) brightness(1.2); }
+  to { filter: drop-shadow(0 0 25px magenta) brightness(1.5); }
+}
+
+header h1 {
+  font-size: 2.5rem;
+  text-shadow: 0 0 10px cyan, 0 0 20px magenta;
+  animation: shineText 4s infinite linear;
+}
+
+@keyframes shineText {
+  0% { text-shadow: 0 0 10px cyan, 0 0 20px magenta; }
+  50% { text-shadow: 0 0 20px yellow, 0 0 30px orange; }
+  100% { text-shadow: 0 0 10px cyan, 0 0 20px magenta; }
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+button, select {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: linear-gradient(90deg, orange, yellow);
+  color: #111;
+  box-shadow: 0 0 10px yellow;
+}
+
+.palette-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 20px;
+}
+
+.color-card {
+  width: 120px;
+  height: 120px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.2);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.color-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255,255,255,0.5);
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.9rem;
+  color: #aaa;
 }
 
 /* === Panel de controles === */
@@ -121,6 +190,12 @@ button:hover, select:hover {
   align-items: center;
   justify-content: center;
   transition: background 0.3s ease;
+  z-index: 5;
+  pointer-events: auto;
+}
+
+.color-input-overlay {
+  pointer-events: none; /* evita que tape el hover del botón */
 }
 
 .lock-btn { left: 6px; }
@@ -272,22 +347,63 @@ input[type="range"] {
   color: #fff;
 }
 
-/* === Mensaje de copiado (toast) === */
+/* Autor + Correo */
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(90deg, #0a0a0a, #111, #1a1a1a);
+  color: #f0f0f0;
+  text-align: center;
+  padding: 18px 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  border-top: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 -5px 20px rgba(0,255,255,0.3);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+}
+
+footer a {
+  color: cyan;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+footer a:hover {
+  color: rgb(0, 255, 26);
+}
+
+footer p {
+  margin: 5px 0;
+}
+
+/* ===========================
+   MENSAJE DE COPIADO (TOAST)
+   =========================== */
 #toast {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(6, 252, 84, 0.91);
   color: #fff;
   padding: 10px 20px;
   border-radius: 8px;
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  box-shadow: 0 0 10px var(--color-cyan);
+  z-index: 2000;
 }
 
-#toast.show { opacity: 1; }
+#toast.show {
+  opacity: 1;
+  transform: translateY(-10px); /* efecto de entrada */
+}
 
-/* === Responsive === */
+/* === Responsive === */ 
 
 /* Escritorio amplio (≥1200px) */
 @media (min-width: 1200px) {
@@ -305,6 +421,7 @@ input[type="range"] {
   .controls { flex-wrap: wrap; justify-content: center; }
   #palette { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px; }
   .color-box { width: 100px; height: 100px; }
+  .color-code { font-size: 0.75rem; padding: 4px 8px; word-break: break-word;}
   h1 { font-size: 1.4rem; }
 }
 
@@ -313,6 +430,7 @@ input[type="range"] {
   header { flex-direction: column; text-align: center; }
   .controls { flex-direction: column; gap: 12px; width: 100%; max-width: 400px; }
   #palette { grid-template-columns: 1fr; gap: 8px; justify-items: center; }
-  .color-box { width: 90%; height: 80px; }
-  .color-code { font-size: 0.9rem; }
+   .color-box { width: 90%;height: 80px; }
+   .color-code { font-size: 0.7rem; padding: 3px 6px; max-width: 90%;
+    text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 }
