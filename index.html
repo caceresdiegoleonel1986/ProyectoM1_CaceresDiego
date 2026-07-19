@@ -13,6 +13,7 @@
   <main class="main-content"><!-- Controles para generar paletas -->
     <section class="controls">
       <!-- Label asociado con select -->
+      <button id="generate-btn" type="button" aria-label="Generar nueva paleta">Generar paleta</button>
       <label for="palette-size">Tamaño de paleta:</label>
       <select id="palette-size" name="palette-size">
         <option value="6">6 colores</option>
@@ -28,9 +29,7 @@
       </select>
 
       <!-- Botones con aria-label para accesibilidad -->
-      <button id="generate-btn" type="button" aria-label="Generar nueva paleta">Generar paleta</button>
       <button id="save-btn" type="button" aria-label="Guardar paleta actual">Guardar paleta</button>
-      <button id="clear-btn" type="button" aria-label="Limpiar paletas guardadas">Limpiar paletas</button>
     </section>
 
     <!-- Paleta generada -->
@@ -39,6 +38,7 @@
     <!-- Paletas guardadas -->
     <section id="saved-palettes" aria-label="Paletas guardadas">
       <h2>Paletas guardadas</h2>
+      <button id="clear-saved-btn" type="button" aria-label="Limpiar paletas guardadas">Limpiar paletas guardadas</button>
       <div id="palettes-list"></div>
     </section>
   </main>
