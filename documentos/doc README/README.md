@@ -27,6 +27,7 @@ Aplicación web para crear, personalizar y guardar paletas de colores en dos for
    - `script.js`
    - Carpeta `assets/img` para el logo.
 3. Abrir `index.html` en el navegador.
+4. o entra en el siguiente enlace: https://caceresdiegoleonel1986.github.io/ProyectoM1_CaceresDiego/
 
 ---
 
@@ -42,11 +43,6 @@ Aplicación web para crear, personalizar y guardar paletas de colores en dos for
 ---
 
 ## Funciones principales
-
-### Conversión de formatos
-- `rgbToHex(color)` → Convierte RGB a HEX.
-- `rgbToHsl(r,g,b)` → Convierte RGB a HSL.
-- `getRandomColor(format)` → Genera un color aleatorio en el formato elegido.
 
 ### Generación y actualización
 - `generatePalette()` → Crea una nueva paleta respetando bloqueos.
