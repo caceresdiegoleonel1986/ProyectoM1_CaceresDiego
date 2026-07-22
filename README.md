@@ -25,13 +25,8 @@ Aplicación web para crear, personalizar y guardar paletas de colores en dos for
 
 ## 📂 Instalación
 1. Clonar o descargar el repositorio.
-2. Colocar los archivos en una carpeta de proyecto:
-   - `index.html`
-   - `style.css`
-   - `script.js`
-   - Carpeta `assets/img` para el logo.
-3. Abrir `index.html` en el navegador.
-4. o entra en el siguiente enlace: https://caceresdiegoleonel1986.github.io/ProyectoM1_CaceresDiego/
+2. Abrir `index.html` en el navegador.
+3. o entra en el siguiente enlace: https://caceresdiegoleonel1986.github.io/ProyectoM1_CaceresDiego/
 
 ---
 
@@ -88,4 +83,8 @@ La IA me ayudó en diferentes etapas:
 - **Aprendizaje**: me permitió entender paso a paso cómo funcionan las conversiones de color, el manejo de transparencia y la interacción con `localStorage`.
 - **Creatividad visual**: sugerencias de animaciones en CSS y efectos para el logo y el fondo dinámico.
 
-👉 En resumen, la IA fue una herramienta de apoyo que aceleró el desarrollo y me permitió enfocarme en la lógica y el diseño del proyecto, mientras aprendía técnicas programación. Dentro de la carpeta documentos se encuentra la sub-carpeta doc AI donde se puede ver las capturas del uso de AI en el proyecto.
+👉 En resumen, la IA fue una herramienta de apoyo que aceleró el desarrollo y me permitió enfocarme en la lógica y el diseño del proyecto, mientras aprendía técnicas programación.
+
+Aquí puede ver las capturas del uso de AI en el proyecto.
+
+![Ver Capturas](documentos/doc AI)
