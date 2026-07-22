@@ -131,7 +131,8 @@ function createLockButton(index, locked) {
   const lockBtn = document.createElement("button");
   lockBtn.className = "lock-btn";
   lockBtn.textContent = locked ? "🔒" : "🔓";
-  lockBtn.onclick = () => {
+  lockBtn.onclick = (event) => {
+    event.stopPropagation();
     const lockedNow = lockBtn.textContent === "🔓";
     lockBtn.textContent = lockedNow ? "🔒" : "🔓";
     palette[index].locked = lockedNow;
@@ -157,7 +158,14 @@ function createWheelButton(index, box, code, color) {
     palette[index].color = e.target.value;
   };
 
-  wheel.onclick = () => colorInput.click();
+  wheel.onclick = (event) => {
+    event.stopPropagation();
+    colorInput.click();
+  };
+
+  colorInput.onclick = (event) => {
+    event.stopPropagation();
+  };
 
   const container = document.createElement("div");
   container.appendChild(wheel);
@@ -172,8 +180,13 @@ function createTransparencySlider(index, box, code) {
   range.min = 0;
   range.max = 100;
   range.value = 100;
+  
+  range.onclick = (event) => {
+    event.stopPropagation();
+  };
 
-  range.oninput = () => {
+  range.oninput = (event) => {
+    event.stopPropagation();
     const alpha = range.value / 100;
     const originalColor = box.dataset.originalColor; // siempre el original
 
@@ -224,10 +237,12 @@ function createColorBox(color, locked, index) {
     box.appendChild(createTransparencySlider(index, box, code));
   }
 
-  code.onclick = () => {
-    navigator.clipboard.writeText(rgbToHex(box.dataset.originalColor));
-    showToast("Código HEX copiado ✔");
-};
+   // 🔹 Ahora el click es sobre toda la caja
+  box.onclick = () => {
+    const textToCopy = code.textContent;
+    navigator.clipboard.writeText(textToCopy);
+    showToast("Formato y HEX copiados ✔");
+  };
 
   wrapper.appendChild(box);
   paletteContainer.appendChild(wrapper);
