@@ -226,17 +226,19 @@ function createColorBox(color, locked, index) {
 
   code.onclick = () => {
     navigator.clipboard.writeText(rgbToHex(box.dataset.originalColor));
-    showToast();
-  };
+    showToast("Código HEX copiado ✔");
+};
 
   wrapper.appendChild(box);
   paletteContainer.appendChild(wrapper);
 }
 
 /* === Función: muestra el mensaje de copiado === */
-function showToast() {
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 3000);
+function showToast(message) {
+  const toastMsg = document.getElementById("toast");
+  toastMsg.textContent = message;
+  toastMsg.classList.add("show", "toast-copy");
+  setTimeout(() => toastMsg.classList.remove("show", "toast-copy"), 3000);
 }
 
 /* === Renderiza paletas guardadas desde localStorage === */
@@ -244,12 +246,7 @@ function renderSaved() {
   const savedContainer = document.getElementById('palettes-list');
   const saved = JSON.parse(localStorage.getItem('palettes') || '[]');
 
-  savedContainer.innerHTML = ''; // limpia solo la lista
-
-  if (saved.length === 0) {
-    savedContainer.innerHTML = '<p>No hay paletas guardadas aún.</p>';
-    return;
-  }
+  savedContainer.innerHTML = '';
 
   saved.forEach((p, index) => {
     const item = document.createElement('div');
@@ -279,20 +276,58 @@ function renderSaved() {
     };
     item.appendChild(loadBtn);
 
-    // Botón para eliminar paleta guardada
+    // Botón para eliminar paleta guardada con confirmación
     const deleteBtn = document.createElement('button');
     deleteBtn.textContent = 'Eliminar';
     deleteBtn.style.background = '#ff4d4d';
     deleteBtn.onclick = () => {
-      saved.splice(index, 1);
-      localStorage.setItem('palettes', JSON.stringify(saved));
-      renderSaved();
+      showConfirmToast("¿Seguro que quieres eliminar esta paleta?", () => {
+        saved.splice(index, 1);
+        localStorage.setItem('palettes', JSON.stringify(saved));
+        renderSaved();
+        showToast("Paleta eliminada ✔");
+      });
     };
     item.appendChild(deleteBtn);
 
     savedContainer.appendChild(item);
   });
 }
+
+function showConfirmToast(message, onConfirm) {
+  const toast = document.getElementById("toast-confirm");
+  toast.innerHTML = `
+    <p>${message}</p>
+    <button id="confirm-yes">Sí</button>
+    <button id="confirm-no">No</button>
+  `;
+  toast.classList.add("show");
+
+  document.getElementById("confirm-yes").onclick = () => {
+    toast.classList.remove("show");
+    onConfirm();
+  };
+  document.getElementById("confirm-no").onclick = () => {
+    toast.classList.remove("show");
+  };
+}
+
+document.getElementById("clear-saved-btn").onclick = () => {
+  const saved = JSON.parse(localStorage.getItem('palettes') || '[]');
+
+  if (saved.length === 0) {
+    // 🔹 Si no hay paletas, mostramos un toast automático
+    showToast("No existen paletas guardadas ❌");
+    return;
+  }
+
+  // 🔹 Si sí hay paletas, mostramos el toast de confirmación
+  showConfirmToast("¿Seguro que quieres eliminar todas las paletas?", () => {
+    localStorage.removeItem('palettes');
+    renderSaved();
+    showToast("Todas las paletas fueron eliminadas ✔");
+  });
+};
 
 /* === Actualiza el fondo del body con la paleta cargada === */
 function updateBackgroundWithPalette(colors) {
@@ -322,11 +357,6 @@ document.getElementById("save-btn").onclick = () => {
     localStorage.setItem('palettes', JSON.stringify(saved));
     renderSaved();
   }
-};
-
-document.getElementById("clear-saved-btn").onclick = () => {
-  localStorage.removeItem('palettes');
-  renderSaved();
 };
 
 /* === Inicializa mostrando paletas guardadas === */

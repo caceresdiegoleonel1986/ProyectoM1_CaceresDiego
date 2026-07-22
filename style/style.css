@@ -403,6 +403,12 @@ footer p {
   transform: translateY(-10px); /* efecto de entrada */
 }
 
+.toast-copy {
+  background: rgba(6, 252, 84, 0.91);
+  color: #fff;
+  box-shadow: 0 0 10px var(--color-cyan);
+}
+
 .social-icons {
   margin-top: 10px;
   text-align: center; /* centra los íconos */
@@ -418,6 +424,42 @@ footer p {
 .social-icons a:hover {
   color: #00ffff;   /* cambia color al pasar el mouse */
   transform: scale(1.2);
+}
+
+#toast-confirm {
+  position: fixed;
+  bottom: 80px; /* un poco más arriba que el de copiado */
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.95);
+  color: #000;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  display: none;
+  z-index: 2000;
+}
+
+#toast-confirm.show {
+  display: block;
+}
+
+#toast-confirm button {
+  margin: 0 5px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#toast-confirm #confirm-yes {
+  background: #4caf50;
+  color: #fff;
+}
+
+#toast-confirm #confirm-no {
+  background: #f44336;
+  color: #fff;
 }
 
 /* === Responsive === */ 
