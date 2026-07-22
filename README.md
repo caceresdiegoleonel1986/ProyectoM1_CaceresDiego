@@ -1,9 +1,13 @@
-<img src="assets/img/logo.png" alt="Logo del Generador de Paletas" width="250" height="250">
+![Logo](assets/img/logo.png)
 
 ## Generador de Paletas de Colores
 
 Aplicación web para crear, personalizar y guardar paletas de colores en dos formatos (RGBA, HSL).
  El usuario puede generar colores aleateorios, bloquear colores, ajustar transparencia, elegir colores manualmente y guardar paletas con nombre en `localStorage`.
+
+---
+
+![Demo del proyecto](assets/img/Generador-de-paletas.gif)
 
 ---
 
@@ -42,22 +46,26 @@ Aplicación web para crear, personalizar y guardar paletas de colores en dos for
 
 ---
 
-## Funciones principales
-
-### Generación y actualización
-- `generatePalette()` → Crea una nueva paleta respetando bloqueos.
-- `updatePaletteFormat()` → Cambia el formato de las cajas al selector elegido.
-
-### Componentes de cada caja
-- `createLockButton(index, locked)` → Botón para bloquear/desbloquear color.
-- `createWheelButton(index, box, code, color)` → Selector cromático 🎨.
-- `createTransparencySlider(index, box, code)` → Slider de transparencia (HEX/RGBA).
-- `createColorBox(color, locked, index)` → Renderiza cada color en pantalla.
-
-### Interacciones
-- `showToast()` → Muestra el mensaje de copiado.
-- `renderSaved()` → Lista las paletas guardadas desde `localStorage`.
-- `updateBackgroundWithPalette(colors)` → Actualiza el fondo con la paleta actual.
+## Estructura
+📁 P1
+│
+├── 📄 index.html
+├── 📄 README.md
+│
+├── 📁 assets
+│   └── 📁 img
+│       ├── logo.png
+│       └── Generador-de-paletas.gif
+│
+├── 📁 documentos
+│   └── 📁 doc AI
+│       └── Capturas de pantallas Copilot
+│
+├── 📁 script
+│   └── script.js
+│
+└── 📁 style
+    └── style.css
 
 ---
 
@@ -77,4 +85,4 @@ La IA me ayudó en diferentes etapas:
 - **Aprendizaje**: me permitió entender paso a paso cómo funcionan las conversiones de color, el manejo de transparencia y la interacción con `localStorage`.
 - **Creatividad visual**: sugerencias de animaciones en CSS y efectos para el logo y el fondo dinámico.
 
-👉 En resumen, la IA fue una herramienta de apoyo que aceleró el desarrollo y me permitió enfocarme en la lógica y el diseño del proyecto, mientras aprendía técnicas programación.
+👉 En resumen, la IA fue una herramienta de apoyo que aceleró el desarrollo y me permitió enfocarme en la lógica y el diseño del proyecto, mientras aprendía técnicas programación. Dentro de la carpeta documentos se encuentra la sub-carpeta doc AI donde se puede ver las capturas del uso de AI en el proyecto.
