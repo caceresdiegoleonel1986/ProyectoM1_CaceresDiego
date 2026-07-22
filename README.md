@@ -87,4 +87,4 @@ La IA me ayudó en diferentes etapas:
 
 Aquí puede ver las capturas del uso de AI en el proyecto.
 
-![Ver Capturas](documentos/doc AI)
+[Ver todas las capturas](documentos/doc%20AI/Capturas%20de%20pantallas%20Copilot)
