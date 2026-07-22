@@ -87,4 +87,4 @@ La IA me ayudó en diferentes etapas:
 
 Aquí puede ver las capturas del uso de AI en el proyecto.
 
-[Ver todas las capturas](https://github.com/caceresdiegoleonel1986/ProyectoM1_CaceresDiego/tree/main/documentos/doc%20AI/Capturas%20de%20pantallas%20Copilot)
+[Ver todas las capturas](https://github.com/caceresdiegoleonel1986/ProyectoM1_CaceresDiego/tree/main/documentos/docAI)
