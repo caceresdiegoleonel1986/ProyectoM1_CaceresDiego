@@ -47,25 +47,28 @@ Aplicación web para crear, personalizar y guardar paletas de colores en dos for
 ---
 
 ## Estructura
+
+```
 📁 P1
 │
-├── 📄 index.html
-├── 📄 README.md
+├── 📄 index.html → Página principal del proyecto.
+├── 📄 README.md → Documentación general y guía de uso.
 │
-├── 📁 assets
-│   └── 📁 img
-│       ├── logo.png
-│       └── Generador-de-paletas.gif
+├── 📁 assets → Recursos multimedia del proyecto.
+│   └── 📁 img → Imágenes utilizadas en la interfaz.
+│       ├── 🖼️ logo.png → Logo principal de Colorfly Studio.
+│       └── 🎞️ Generador-de-paletas.gif → Demostración animada del generador.
 │
-├── 📁 documentos
-│   └── 📁 doc AI
-│       └── Capturas de pantallas Copilot
+├── 📁 documentos → Archivos de referencia y documentación adicional.
+│   └── 📁 doc AI → Material generado con ayuda de IA.
+│       └── 📂 Capturas de pantallas Copilot → Imágenes del proceso de desarrollo.
 │
-├── 📁 script
-│   └── script.js
+├── 📁 script → Código JavaScript del proyecto.
+│   └── ⚙️ script.js → Lógica principal: generación, guardado y manejo de paletas.
 │
-└── 📁 style
-    └── style.css
+└── 📁 style → Estilos visuales del proyecto.
+    └── 🎨 style.css → Diseño y formato de la interfaz.
+```
 
 ---
 
