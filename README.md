@@ -87,4 +87,4 @@ La IA me ayudó en diferentes etapas:
 
 Aquí puede ver las capturas del uso de AI en el proyecto.
 
-[Ver todas las capturas](https://github.com/caceresdiegoleonel1986/ProyectoM1_CaceresDiego/tree/main/documentos/docAI)
+[Ver todas las capturas](documentos/docAI)
