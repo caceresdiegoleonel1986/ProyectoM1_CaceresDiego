@@ -160,6 +160,7 @@ function createWheelButton(index, box, code, color) {
 
   wheel.onclick = (event) => {
     event.stopPropagation();
+    colorInput.value = rgbToHex(box.style.background);
     colorInput.click();
   };
 
