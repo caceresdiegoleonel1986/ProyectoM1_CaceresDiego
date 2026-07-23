@@ -203,10 +203,11 @@ button:hover, select:hover {
 
 /* === Contenedor de paleta actual === */
 #palette {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 16px;
-  justify-items: center;
   padding: 20px;
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(10px);
