@@ -1,44 +1,13 @@
+/* === Módulos importados === */
+import { rgbToHex, rgbToHsl } from './utils.js';
+import { initIroIfNeeded, openIroPicker, closeIroModal, iroPicker } from './picker.js';
+
 /* === Variables principales === */
 const paletteContainer = document.getElementById('palette'); // contenedor de la paleta actual
 const toast = document.getElementById('toast');              // mensaje flotante de copiado
 const savedContainer = document.getElementById('saved-palettes'); // sección de paletas guardadas
 let palette = []; // estado global de la paleta actual
-
-/* === Conversión de formatos === */
-// Convierte cualquier color a HEX
-function rgbToHex(color) {
-  if (color.startsWith("#")) return color;
-  const nums = color.match(/\d+/g);
-  if (!nums) return "#ffffff";
-  const [r, g, b] = nums.map(Number);
-  return "#" + [r, g, b].map(x => x.toString(16).padStart(2, "0")).join("");
-}
-
-// Convierte RGB a HSL
-function rgbToHsl(r, g, b) {
-  r /= 255; g /= 255; b /= 255;
-  const max = Math.max(r, g, b), min = Math.min(r, g, b);
-  let h, s, l = (max + min) / 2;
-
-  if (max === min) {
-    h = s = 0;
-  } else {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
-    }
-    h /= 6;
-  }
-
-  return {
-    h: Math.round(h * 360),
-    s: Math.round(s * 100),
-    l: Math.round(l * 100)
-  };
-}
+let currentBoxIndex = null;
 
 // Genera un color aleatorio en HEX, RGBA o HSL
 function getRandomColor(format) {
@@ -171,7 +140,8 @@ function createWheelButton(index, box, code, color) {
       return;
     }
     // En escritorio o pantallas grandes usamos iro.js
-    openIroPicker(box, index);
+    currentBoxIndex = index;
+    openIroPicker(rgbToHex(box.style.background));
   };
 
   colorInput.onclick = (event) => {
@@ -264,7 +234,8 @@ function createColorBox(color, locked, index) {
     }
     if (isTouchDeviceLocal) {
       // en touch devices grandes abrimos el picker avanzado
-      openIroPicker(box, index);
+      currentBoxIndex = index;
+      openIroPicker(rgbToHex(box.style.background));
       return;
     }
     const textToCopy = code.textContent;
@@ -336,6 +307,20 @@ function renderSaved() {
     savedContainer.appendChild(item);
   });
 }
+
+// Escucha global para cambios desde iro.js
+window.addEventListener('iro:color:change', (e) => {
+  if (currentBoxIndex === null) return;
+  const boxes = document.querySelectorAll('.color-box');
+  const box = boxes[currentBoxIndex];
+  if (!box) return;
+  const hex = e.detail.hex;
+  const code = box.querySelector('.color-code');
+  box.style.background = hex;
+  code.textContent = `${hex} | ${rgbToHex(hex)}`;
+  box.dataset.baseColor = hex;
+  palette[currentBoxIndex].color = hex;
+});
 
 function showConfirmToast(message, onConfirm) {
   const toast = document.getElementById("toast-confirm");
