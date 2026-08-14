@@ -585,3 +585,32 @@ footer p {
   .color-code { order: 2; }
   .color-input-overlay { order: 1; }
 }
+
+/* Enlace para saltar contenido (visibilidad al foco) */
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.skip-link:focus {
+  left: 10px;
+  top: 10px;
+  width: auto;
+  height: auto;
+  padding: 8px 12px;
+  background: #000;
+  color: #fff;
+  z-index: 9999;
+  border-radius: 6px;
+}
+
+/* Estilos mejorados de foco para accesibilidad */
+:focus {
+  outline: 3px solid #ffd54f;
+  outline-offset: 3px;
+}
+
+:focus:not(:focus-visible) { outline: none; }

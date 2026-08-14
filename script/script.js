@@ -368,6 +368,39 @@ const saveNameInput = document.getElementById('save-name');
 const saveConfirmBtn = document.getElementById('save-confirm');
 const saveCancelBtn = document.getElementById('save-cancel');
 let previousActiveElement = null;
+// --- Helpers para trap focus en modales ---
+function getFocusableElements(container) {
+  return Array.from(container.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'));
+}
+
+function trapFocus(container) {
+  const focusable = getFocusableElements(container);
+  if (focusable.length === 0) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  container._focusHandler = function(e) {
+    if (e.key !== 'Tab') return;
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  };
+  document.addEventListener('keydown', container._focusHandler);
+}
+
+function releaseFocus(container) {
+  if (container && container._focusHandler) {
+    document.removeEventListener('keydown', container._focusHandler);
+    delete container._focusHandler;
+  }
+}
 
 document.getElementById("save-btn").onclick = () => {
   const colors = [...document.querySelectorAll('.color-code')].map(c => c.textContent);
@@ -381,7 +414,10 @@ document.getElementById("save-btn").onclick = () => {
   previousActiveElement = document.activeElement;
   saveForm.classList.add('show');
   saveForm.setAttribute('aria-hidden', 'false');
-  setTimeout(() => saveNameInput.focus(), 50);
+  setTimeout(() => {
+    saveNameInput.focus();
+    trapFocus(saveForm);
+  }, 50);
 };
 
 saveConfirmBtn.onclick = () => {
@@ -408,6 +444,7 @@ saveConfirmBtn.onclick = () => {
     renderSaved();
     saveForm.classList.remove('show');
     saveForm.setAttribute('aria-hidden', 'true');
+    releaseFocus(saveForm);
     showToast("Paleta guardada ✔");
     if (previousActiveElement) previousActiveElement.focus();
   };
@@ -422,6 +459,7 @@ saveConfirmBtn.onclick = () => {
 saveCancelBtn.onclick = () => {
   saveForm.classList.remove('show');
   saveForm.setAttribute('aria-hidden', 'true');
+  releaseFocus(saveForm);
   if (previousActiveElement) previousActiveElement.focus();
 };
 
@@ -438,6 +476,34 @@ document.addEventListener('keydown', (e) => {
     if (iroModal && iroModal.classList.contains('show')) document.getElementById('iro-close').click();
   }
 });
+
+// Integrar trap focus con iro modal
+function openIroPicker(box, index) {
+  currentBoxIndex = index;
+  const base = box.dataset.baseColor || box.style.background || '#ffffff';
+  const hex = base.startsWith('#') ? base : rgbToHex(base);
+  initIroIfNeeded(hex);
+  if (iroPicker) iroPicker.color.set(hex);
+  if (!iroModal) iroModal = document.getElementById('iro-modal');
+  iroModal.classList.add('show');
+  iroModal.setAttribute('aria-hidden', 'false');
+  // focus al botón cerrar
+  setTimeout(() => {
+    const closeBtn = document.getElementById('iro-close');
+    if (closeBtn) closeBtn.focus();
+    trapFocus(iroModal);
+  }, 50);
+}
+
+// Cerrar modal (actualiza para liberar focus trap)
+document.getElementById('iro-close').onclick = () => {
+  if (iroModal) {
+    iroModal.classList.remove('show');
+    iroModal.setAttribute('aria-hidden', 'true');
+    releaseFocus(iroModal);
+    currentBoxIndex = null;
+  }
+};
 
 // === Integración de iro.js (color wheel) ===
 let iroPicker = null;
