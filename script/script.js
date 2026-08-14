@@ -1,6 +1,8 @@
 /* === Módulos importados === */
 import { rgbToHex, rgbToHsl } from './utils.js';
-import { initIroIfNeeded, openIroPicker, closeIroModal, iroPicker } from './picker.js';
+import { initIroIfNeeded, openIroPicker as pickerOpen, closeIroModal, iroPicker } from './picker.js';
+import { renderSaved, showToast, showConfirmToast, clearAllSavedWithConfirm } from './ui.js';
+import { getSavedPalettes, savePaletteObject } from './storage.js';
 
 /* === Variables principales === */
 const paletteContainer = document.getElementById('palette'); // contenedor de la paleta actual
@@ -248,65 +250,7 @@ function createColorBox(color, locked, index) {
 }
 
 /* === Función: muestra el mensaje de copiado === */
-function showToast(message) {
-  const toastMsg = document.getElementById("toast");
-  toastMsg.textContent = message;
-  toastMsg.classList.add("show", "toast-copy");
-  setTimeout(() => toastMsg.classList.remove("show", "toast-copy"), 3000);
-}
-
-/* === Renderiza paletas guardadas desde localStorage === */
-function renderSaved() {
-  const savedContainer = document.getElementById('palettes-list');
-  const saved = JSON.parse(localStorage.getItem('palettes') || '[]');
-
-  savedContainer.innerHTML = '';
-
-  saved.forEach((p, index) => {
-    const item = document.createElement('div');
-    item.className = 'saved-item';
-    item.innerHTML = `<h4>${p.name} - ${p.date}</h4>`;
-
-    const colorsList = document.createElement('ul');
-    colorsList.className = 'palette';
-    p.colors.forEach(c => {
-      const li = document.createElement('li');
-      li.className = 'saved-color';
-      li.style.background = c.split("|")[0].trim();
-      li.title = c;
-      colorsList.appendChild(li);
-    });
-    item.appendChild(colorsList);
-
-    // Botón para cargar paleta guardada
-    const loadBtn = document.createElement('button');
-    loadBtn.textContent = 'Cargar esta paleta';
-    loadBtn.onclick = () => {
-      paletteContainer.innerHTML = '';
-      p.colors.forEach((c, i) => {
-        createColorBox(c.split("|")[0].trim(), false, i);
-      });
-      updateBackgroundWithPalette(p.colors.map(c => c.split("|")[0].trim()));
-    };
-    item.appendChild(loadBtn);
-
-    // Botón para eliminar paleta guardada con confirmación
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Eliminar';
-    deleteBtn.style.background = '#ff4d4d';
-    deleteBtn.onclick = () => {
-      showConfirmToast("¿Seguro que quieres eliminar esta paleta?", () => {
-        saved.splice(index, 1);
-        localStorage.setItem('palettes', JSON.stringify(saved));
-        renderSaved();
-        showToast("Paleta eliminada ✔");
-      });
-    };
-    item.appendChild(deleteBtn);
-
-    savedContainer.appendChild(item);
-  });
-}
+// ahora `renderSaved`, `showToast` y `showConfirmToast` vienen de `ui.js`
 
 // Escucha global para cambios desde iro.js
 window.addEventListener('iro:color:change', (e) => {
@@ -435,20 +379,14 @@ saveConfirmBtn.onclick = () => {
     saveNameInput.focus();
     return;
   }
-
   const colors = JSON.parse(saveForm.dataset.colors || '[]');
-  const saved = JSON.parse(localStorage.getItem('palettes') || '[]');
+  const saved = getSavedPalettes();
   const existsIndex = saved.findIndex(s => s.name && s.name.toLowerCase() === name.toLowerCase());
 
   const doSave = () => {
     const date = new Date().toLocaleString();
     const paletteObj = { name, date, colors };
-    if (existsIndex >= 0) {
-      saved[existsIndex] = paletteObj; // sobrescribe
-    } else {
-      saved.push(paletteObj);
-    }
-    localStorage.setItem('palettes', JSON.stringify(saved));
+    savePaletteObject(paletteObj);
     renderSaved();
     saveForm.classList.remove('show');
     saveForm.setAttribute('aria-hidden', 'true');
@@ -485,14 +423,13 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// Integrar trap focus con iro modal
-function openIroPicker(box, index) {
-  currentBoxIndex = index;
-  const base = box.dataset.baseColor || box.style.background || '#ffffff';
-  const hex = base.startsWith('#') ? base : rgbToHex(base);
-  initIroIfNeeded(hex);
-  if (iroPicker) iroPicker.color.set(hex);
-  if (!iroModal) iroModal = document.getElementById('iro-modal');
+// Integrar trap focus con iro modal (usa picker.js para inicializar el picker)
+let iroModal = document.getElementById('iro-modal');
+
+function openIroPicker(hex) {
+  // `currentBoxIndex` debe estar seteado por el llamador
+  pickerOpen(hex);
+  iroModal = document.getElementById('iro-modal');
   iroModal.classList.add('show');
   iroModal.setAttribute('aria-hidden', 'false');
   // focus al botón cerrar
@@ -503,56 +440,11 @@ function openIroPicker(box, index) {
   }, 50);
 }
 
-// Cerrar modal (actualiza para liberar focus trap)
-document.getElementById('iro-close').onclick = () => {
-  if (iroModal) {
-    iroModal.classList.remove('show');
-    iroModal.setAttribute('aria-hidden', 'true');
-    releaseFocus(iroModal);
-    currentBoxIndex = null;
-  }
-};
-
-// === Integración de iro.js (color wheel) ===
-let iroPicker = null;
-let iroModal = document.getElementById('iro-modal');
-let currentBoxIndex = null;
-
-function initIroIfNeeded(initialHex) {
-  if (iroPicker || !window.iro) return;
-  iroPicker = new iro.ColorPicker('#iro-picker', { width: 220, color: initialHex || '#ffffff' });
-  iroPicker.on('color:change', (color) => {
-    if (currentBoxIndex === null) return;
-    const boxes = document.querySelectorAll('.color-box');
-    const box = boxes[currentBoxIndex];
-    if (!box) return;
-    const hex = color.hexString;
-    const code = box.querySelector('.color-code');
-    box.style.background = hex;
-    code.textContent = `${hex} | ${rgbToHex(hex)}`;
-    box.dataset.baseColor = hex;
-    palette[currentBoxIndex].color = hex;
-  });
-}
-
-function openIroPicker(box, index) {
-  currentBoxIndex = index;
-  const base = box.dataset.baseColor || box.style.background || '#ffffff';
-  const hex = base.startsWith('#') ? base : rgbToHex(base);
-  initIroIfNeeded(hex);
-  if (iroPicker) iroPicker.color.set(hex);
-  if (!iroModal) iroModal = document.getElementById('iro-modal');
-  iroModal.classList.add('show');
-  iroModal.setAttribute('aria-hidden', 'false');
-}
-
 // Cerrar modal
 document.getElementById('iro-close').onclick = () => {
-  if (iroModal) {
-    iroModal.classList.remove('show');
-    iroModal.setAttribute('aria-hidden', 'true');
-    currentBoxIndex = null;
-  }
+  closeIroModal();
+  releaseFocus(iroModal);
+  currentBoxIndex = null;
 };
 
 // Cerrar al hacer click fuera del contenido
