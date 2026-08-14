@@ -466,6 +466,67 @@ footer p {
   color: #fff;
 }
 
+/* === Formulario de guardado integrado === */
+#save-form {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45);
+  z-index: 2500;
+}
+
+#save-form.show { display: flex; }
+
+.save-form-content {
+  background: rgba(255,255,255,0.95);
+  color: #000;
+  padding: 18px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+.save-form-content h3 { margin: 0 0 8px 0; }
+.save-form-content label { display:block; margin-bottom:6px; font-weight:700; }
+.save-form-content input[type="text"] { width:100%; padding:8px 10px; border-radius:6px; border:1px solid #ccc; margin-bottom:10px; font-size:1rem; }
+.save-form-actions { display:flex; gap:10px; justify-content:flex-end; }
+.save-form-actions button { padding:8px 12px; border-radius:6px; border:none; cursor:pointer; }
+.save-form-actions #save-confirm { background:#4caf50; color:#fff; }
+.save-form-actions #save-cancel { background:#f44336; color:#fff; }
+
+/* === Styles para el modal del color wheel (iro.js) === */
+#iro-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.5);
+  z-index: 3000;
+}
+
+#iro-modal.show { display: flex; }
+
+.iro-modal-content {
+  background: #fff;
+  color: #000;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  width: 95%;
+  max-width: 360px;
+  text-align: center;
+}
+
+.iro-actions { margin-top: 12px; display:flex; justify-content:center; }
+.iro-actions button { padding:8px 12px; border-radius:6px; border:none; background:#333; color:#fff; cursor:pointer; }
+
+/* Ajuste para el contenedor del picker creado por iro */
+#iro-picker { margin: 6px auto; }
+
 /* === Responsive === */ 
 
 /* Escritorio amplio (≥1200px) */
@@ -496,4 +557,31 @@ footer p {
    .color-box { width: 90%;height: 80px; }
    .color-code { font-size: 0.7rem; padding: 0; max-width: 90%;
     text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+}
+
+/* Mostrar la rueda cromática (input[type=color]) en móvil */
+@media (max-width: 600px) {
+  .wheel-btn { display: none; }
+  .color-input-overlay {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    position: relative !important;
+    width: 44px !important;
+    height: 44px !important;
+    left: 0 !important;
+    top: 0 !important;
+    margin-right: 8px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.9);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    appearance: none;
+    -webkit-appearance: none;
+    background-clip: padding-box;
+    cursor: pointer;
+  }
+
+  /* Ajuste para que el input color se muestre antes del código en la caja */
+  .color-box { display: flex; align-items: center; gap: 12px; padding: 10px; }
+  .color-code { order: 2; }
+  .color-input-overlay { order: 1; }
 }

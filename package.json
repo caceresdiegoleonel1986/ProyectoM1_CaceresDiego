@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "psl": "^1.15.0"
+  },
+  "name": "p1",
+  "version": "1.0.0",
+  "description": "![Logo](assets/img/logo.png)",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caceresdiegoleonel1986/Proyecto-Integrador-1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/caceresdiegoleonel1986/Proyecto-Integrador-1/issues"
+  },
+  "homepage": "https://github.com/caceresdiegoleonel1986/Proyecto-Integrador-1#readme"
+}

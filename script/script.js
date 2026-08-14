@@ -160,8 +160,7 @@ function createWheelButton(index, box, code, color) {
 
   wheel.onclick = (event) => {
     event.stopPropagation();
-    colorInput.value = rgbToHex(box.style.background);
-    colorInput.click();
+    openIroPicker(box, index);
   };
 
   colorInput.onclick = (event) => {
@@ -239,7 +238,12 @@ function createColorBox(color, locked, index) {
   }
 
    // 🔹 Ahora el click es sobre toda la caja
+  const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
   box.onclick = () => {
+    if (isTouchDevice) {
+      openIroPicker(box, index);
+      return;
+    }
     const textToCopy = code.textContent;
     navigator.clipboard.writeText(textToCopy);
     showToast("Formato y HEX copiados ✔");
@@ -358,22 +362,101 @@ function updateBackgroundWithPalette(colors) {
 document.getElementById("generate-btn").onclick = generatePalette;
 document.getElementById("format").onchange = updatePaletteFormat;
 
+// Lógica para abrir el formulario integrado de guardado
+const saveForm = document.getElementById('save-form');
+const saveNameInput = document.getElementById('save-name');
+const saveConfirmBtn = document.getElementById('save-confirm');
+const saveCancelBtn = document.getElementById('save-cancel');
+
 document.getElementById("save-btn").onclick = () => {
   const colors = [...document.querySelectorAll('.color-code')].map(c => c.textContent);
   if (colors.length === 0) {
     alert("No hay colores para guardar.");
     return;
   }
-  const name = prompt('Nombre de la paleta:'); // opción de guardar con nombre
-  if (name) {
-    const date = new Date().toLocaleString();
-    const paletteObj = { name, date, colors };
-    const saved = JSON.parse(localStorage.getItem('palettes') || '[]');
-    saved.push(paletteObj);
-    localStorage.setItem('palettes', JSON.stringify(saved));
-    renderSaved();
+  // Guardamos temporalmente los colores en el dataset del formulario
+  saveForm.dataset.colors = JSON.stringify(colors);
+  saveNameInput.value = "";
+  saveForm.classList.add('show');
+  setTimeout(() => saveNameInput.focus(), 50);
+};
+
+saveConfirmBtn.onclick = () => {
+  const name = saveNameInput.value.trim();
+  if (!name) {
+    alert('Ingrese un nombre para la paleta.');
+    saveNameInput.focus();
+    return;
+  }
+  const colors = JSON.parse(saveForm.dataset.colors || '[]');
+  const date = new Date().toLocaleString();
+  const paletteObj = { name, date, colors };
+  const saved = JSON.parse(localStorage.getItem('palettes') || '[]');
+  saved.push(paletteObj);
+  localStorage.setItem('palettes', JSON.stringify(saved));
+  renderSaved();
+  saveForm.classList.remove('show');
+  showToast("Paleta guardada ✔");
+};
+
+saveCancelBtn.onclick = () => {
+  saveForm.classList.remove('show');
+};
+
+// Soporte para Enter y Escape en el input
+saveNameInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') saveConfirmBtn.click();
+  if (e.key === 'Escape') saveCancelBtn.click();
+});
+
+// === Integración de iro.js (color wheel) ===
+let iroPicker = null;
+let iroModal = document.getElementById('iro-modal');
+let currentBoxIndex = null;
+
+function initIroIfNeeded(initialHex) {
+  if (iroPicker || !window.iro) return;
+  iroPicker = new iro.ColorPicker('#iro-picker', { width: 220, color: initialHex || '#ffffff' });
+  iroPicker.on('color:change', (color) => {
+    if (currentBoxIndex === null) return;
+    const boxes = document.querySelectorAll('.color-box');
+    const box = boxes[currentBoxIndex];
+    if (!box) return;
+    const hex = color.hexString;
+    const code = box.querySelector('.color-code');
+    box.style.background = hex;
+    code.textContent = `${hex} | ${rgbToHex(hex)}`;
+    box.dataset.baseColor = hex;
+    palette[currentBoxIndex].color = hex;
+  });
+}
+
+function openIroPicker(box, index) {
+  currentBoxIndex = index;
+  const base = box.dataset.baseColor || box.style.background || '#ffffff';
+  const hex = base.startsWith('#') ? base : rgbToHex(base);
+  initIroIfNeeded(hex);
+  if (iroPicker) iroPicker.color.set(hex);
+  if (!iroModal) iroModal = document.getElementById('iro-modal');
+  iroModal.classList.add('show');
+  iroModal.setAttribute('aria-hidden', 'false');
+}
+
+// Cerrar modal
+document.getElementById('iro-close').onclick = () => {
+  if (iroModal) {
+    iroModal.classList.remove('show');
+    iroModal.setAttribute('aria-hidden', 'true');
+    currentBoxIndex = null;
   }
 };
+
+// Cerrar al hacer click fuera del contenido
+document.getElementById('iro-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'iro-modal') {
+    document.getElementById('iro-close').click();
+  }
+});
 
 /* === Inicializa mostrando paletas guardadas === */
 renderSaved();
