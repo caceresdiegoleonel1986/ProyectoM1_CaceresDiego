@@ -149,6 +149,8 @@ function createWheelButton(index, box, code, color) {
   const colorInput = document.createElement("input");
   colorInput.type = "color";
   colorInput.className = "color-input-overlay";
+  colorInput.setAttribute('aria-label', 'Selector de color nativo');
+  colorInput.title = 'Abrir selector de color nativo';
   colorInput.value = color.startsWith("#") ? color : rgbToHex(color);
 
   colorInput.oninput = (e) => {
@@ -160,6 +162,15 @@ function createWheelButton(index, box, code, color) {
 
   wheel.onclick = (event) => {
     event.stopPropagation();
+    const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    const useNativeOnSmall = isTouch && window.innerWidth <= 600;
+    if (useNativeOnSmall) {
+      // En móviles pequeños preferimos el selector nativo
+      colorInput.value = rgbToHex(box.style.background);
+      colorInput.click();
+      return;
+    }
+    // En escritorio o pantallas grandes usamos iro.js
     openIroPicker(box, index);
   };
 
@@ -240,7 +251,19 @@ function createColorBox(color, locked, index) {
    // 🔹 Ahora el click es sobre toda la caja
   const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
   box.onclick = () => {
-    if (isTouchDevice) {
+    const isTouchDeviceLocal = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    const smallScreen = window.innerWidth <= 600;
+    if (isTouchDeviceLocal && smallScreen) {
+      // en móvil pequeño, abrir el selector nativo directamente
+      const input = box.querySelector('.color-input-overlay');
+      if (input) {
+        input.value = rgbToHex(box.style.background);
+        input.click();
+        return;
+      }
+    }
+    if (isTouchDeviceLocal) {
+      // en touch devices grandes abrimos el picker avanzado
       openIroPicker(box, index);
       return;
     }
