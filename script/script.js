@@ -367,6 +367,7 @@ const saveForm = document.getElementById('save-form');
 const saveNameInput = document.getElementById('save-name');
 const saveConfirmBtn = document.getElementById('save-confirm');
 const saveCancelBtn = document.getElementById('save-cancel');
+let previousActiveElement = null;
 
 document.getElementById("save-btn").onclick = () => {
   const colors = [...document.querySelectorAll('.color-code')].map(c => c.textContent);
@@ -377,7 +378,9 @@ document.getElementById("save-btn").onclick = () => {
   // Guardamos temporalmente los colores en el dataset del formulario
   saveForm.dataset.colors = JSON.stringify(colors);
   saveNameInput.value = "";
+  previousActiveElement = document.activeElement;
   saveForm.classList.add('show');
+  saveForm.setAttribute('aria-hidden', 'false');
   setTimeout(() => saveNameInput.focus(), 50);
 };
 
@@ -388,25 +391,52 @@ saveConfirmBtn.onclick = () => {
     saveNameInput.focus();
     return;
   }
+
   const colors = JSON.parse(saveForm.dataset.colors || '[]');
-  const date = new Date().toLocaleString();
-  const paletteObj = { name, date, colors };
   const saved = JSON.parse(localStorage.getItem('palettes') || '[]');
-  saved.push(paletteObj);
-  localStorage.setItem('palettes', JSON.stringify(saved));
-  renderSaved();
-  saveForm.classList.remove('show');
-  showToast("Paleta guardada ✔");
+  const existsIndex = saved.findIndex(s => s.name && s.name.toLowerCase() === name.toLowerCase());
+
+  const doSave = () => {
+    const date = new Date().toLocaleString();
+    const paletteObj = { name, date, colors };
+    if (existsIndex >= 0) {
+      saved[existsIndex] = paletteObj; // sobrescribe
+    } else {
+      saved.push(paletteObj);
+    }
+    localStorage.setItem('palettes', JSON.stringify(saved));
+    renderSaved();
+    saveForm.classList.remove('show');
+    saveForm.setAttribute('aria-hidden', 'true');
+    showToast("Paleta guardada ✔");
+    if (previousActiveElement) previousActiveElement.focus();
+  };
+
+  if (existsIndex >= 0) {
+    showConfirmToast("Ya existe una paleta con ese nombre. ¿Sobrescribir?", doSave);
+  } else {
+    doSave();
+  }
 };
 
 saveCancelBtn.onclick = () => {
   saveForm.classList.remove('show');
+  saveForm.setAttribute('aria-hidden', 'true');
+  if (previousActiveElement) previousActiveElement.focus();
 };
 
 // Soporte para Enter y Escape en el input
 saveNameInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') saveConfirmBtn.click();
   if (e.key === 'Escape') saveCancelBtn.click();
+});
+
+// Cerrar modales con Escape cuando estén abiertos
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (saveForm.classList.contains('show')) saveCancelBtn.click();
+    if (iroModal && iroModal.classList.contains('show')) document.getElementById('iro-close').click();
+  }
 });
 
 // === Integración de iro.js (color wheel) ===
