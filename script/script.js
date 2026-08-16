@@ -456,3 +456,6 @@ document.getElementById('iro-modal').addEventListener('click', (e) => {
 
 /* === Inicializa mostrando paletas guardadas === */
 renderSaved();
+
+/* === Genera la paleta inicial cuando carga la página === */
+generatePalette();
