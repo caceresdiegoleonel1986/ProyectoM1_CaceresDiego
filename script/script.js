@@ -266,24 +266,6 @@ window.addEventListener('iro:color:change', (e) => {
   palette[currentBoxIndex].color = hex;
 });
 
-function showConfirmToast(message, onConfirm) {
-  const toast = document.getElementById("toast-confirm");
-  toast.innerHTML = `
-    <p>${message}</p>
-    <button id="confirm-yes">Sí</button>
-    <button id="confirm-no">No</button>
-  `;
-  toast.classList.add("show");
-
-  document.getElementById("confirm-yes").onclick = () => {
-    toast.classList.remove("show");
-    onConfirm();
-  };
-  document.getElementById("confirm-no").onclick = () => {
-    toast.classList.remove("show");
-  };
-}
-
 document.getElementById("clear-saved-btn").onclick = () => {
   const saved = JSON.parse(localStorage.getItem('palettes') || '[]');
 
